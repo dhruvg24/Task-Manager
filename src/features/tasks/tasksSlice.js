@@ -1,53 +1,41 @@
-import { createSlice } from "@reduxjs/toolkit";
-
-// we will have status of tasks as pending, completed.
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  tasks: JSON.parse(localStorage.getItem("tasks")) || [],
-  // get from local storage
+  tasks: JSON.parse(localStorage.getItem('tasks')) || [],
 };
 
 const tasksSlice = createSlice({
-  name: "tasks",
+  name: 'tasks',
   initialState,
   reducers: {
     addTask: (state, action) => {
-      const newTask = action.payload;
-      state.tasks.push(newTask);
-      localStorage.setItem("tasks", JSON.stringify(state.tasks));
-    },
-    deleteTask: (state, action) => {
-      // filter out the task with given id, and render all remaining ones - will remove the task with given id.
-      state.tasks = state.tasks.filter((task) => task.id !== action.payload);
-      localStorage.setItem("tasks", JSON.stringify(state.tasks));
+      state.tasks.push(action.payload);
+      localStorage.setItem('tasks', JSON.stringify(state.tasks));
     },
     updateTask: (state, action) => {
-      const idx = state.tasks.findIndex(
-        (task) => task.id === action.payload.id
-      );
-      if (idx !== -1) {
-        state.tasks[idx] = action.payload;
-        localStorage.setItem("tasks", JSON.stringify(state.tasks));
+      const index = state.tasks.findIndex(t => t.id === action.payload.id);
+      if (index !== -1) {
+        state.tasks[index] = action.payload;
+        localStorage.setItem('tasks', JSON.stringify(state.tasks));
+      }
+    },
+    deleteTask: (state, action) => {
+      state.tasks = state.tasks.filter(t => t.id !== action.payload);
+      localStorage.setItem('tasks', JSON.stringify(state.tasks));
+    },
+    toggleStatus: (state, action) => {
+      const index = state.tasks.findIndex(t => t.id === action.payload);
+      if (index !== -1) {
+        state.tasks[index].status = state.tasks[index].status === 'Pending' ? 'Done' : 'Pending';
+        localStorage.setItem('tasks', JSON.stringify(state.tasks));
       }
     },
     reorderTasks: (state, action) => {
       state.tasks = action.payload;
-      localStorage.setItem("tasks", JSON.stringify(state.tasks));
-    },
-    toggleStatus: (state, action) => {
-      // find index
-      const idx = state.tasks.findIndex(
-        (task) => task.id === action.payload.id
-      );
-      if (idx !== -1) {
-        state.tasks[idx].status === "Pending" ? "Completed" : "Pending";
-        localStorage.setItem("tasks", JSON.stringify(state.tasks));
-      }
-    },
+      localStorage.setItem('tasks', JSON.stringify(state.tasks));
+    }
   },
 });
 
-export const { addTask, deleteTask, updateTask, reorderTasks, toggleStatus } =
-  tasksSlice.actions;
+export const { addTask, updateTask, deleteTask, toggleStatus, reorderTasks } = tasksSlice.actions;
 export default tasksSlice.reducer;
-
